@@ -11,7 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/2/2016
+ * Time: 12:29 PM
+ */
 @Service("eventServiceImpl")
 @Transactional
 public class EventServiceImpl implements EventService {
@@ -41,6 +46,11 @@ public class EventServiceImpl implements EventService {
 
     public List<Event> getAll() {
         return eventDAO.getAll();
+    }
+
+    @Override
+    public Event getById(Long id) {
+        return eventDAO.getById(id);
     }
 
     public List<Event> getForDateRange(LocalDateTime from, LocalDateTime to) {

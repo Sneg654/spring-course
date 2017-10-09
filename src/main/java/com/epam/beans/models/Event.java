@@ -1,16 +1,37 @@
 package com.epam.beans.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
+
 import java.time.LocalDateTime;
 
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/1/2016
+ * Time: 7:42 PM
+ */
 public class Event {
 
-    private long          id;
-    private String        name;
-    private Rate          rate;
-    private double        basePrice;
+    private long id;
+    private String name;
+    private Rate rate;
+
+    @NumberFormat
+    private double basePrice;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateTime;
-    private Auditorium    auditorium;
+    private Auditorium auditorium;
+
+    public String getAuditoriumName() {
+        return auditoriumName;
+    }
+
+    public void setAuditoriumName(String auditoriumName) {
+        this.auditoriumName = auditoriumName;
+    }
+
+    private String auditoriumName;
 
     public Event() {
     }
@@ -26,6 +47,9 @@ public class Event {
         this.basePrice = basePrice;
         this.dateTime = dateTime;
         this.auditorium = auditorium;
+        if (auditorium != null) {
+            setAuditoriumName(auditorium.getName());
+        }
     }
 
     public Event withId(Long eventId) {
@@ -77,6 +101,7 @@ public class Event {
     }
 
     public void setAuditorium(Auditorium auditorium) {
+        setAuditoriumName(auditorium.getName());
         this.auditorium = auditorium;
     }
 
@@ -120,12 +145,12 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", rate=" + rate +
-               ", basePrice=" + basePrice +
-               ", dateTime=" + dateTime +
-               ", auditorium=" + auditorium +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", rate=" + rate +
+                ", basePrice=" + basePrice +
+                ", dateTime=" + dateTime +
+                ", auditorium=" + auditorium +
+                '}';
     }
 }

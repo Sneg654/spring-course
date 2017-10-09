@@ -31,7 +31,7 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
-                                 com.epam.beans.configuration.TestAspectsConfiguration.class})
+        com.epam.beans.configuration.TestAspectsConfiguration.class})
 @Transactional
 public class TestCounterAspect {
 
@@ -54,7 +54,7 @@ public class TestCounterAspect {
     private UserDAOMock userDAOMock;
 
     @Autowired
-    private CounterAspect       counterAspect;
+    private CounterAspect counterAspect;
 
     @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
@@ -103,9 +103,9 @@ public class TestCounterAspect {
         User user = (User) applicationContext.getBean("testUser1");
         List<Integer> seats = Arrays.asList(1, 2, 3, 4);
         bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(), event.getDateTime(), seats,
-                                      user);
+                user);
         bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(), event.getDateTime(), seats,
-                                      user);
+                user);
         HashMap<String, Integer> expected = new HashMap<String, Integer>() {{
             put(event.getName(), 2);
         }};
@@ -118,11 +118,11 @@ public class TestCounterAspect {
         Ticket ticket1 = (Ticket) applicationContext.getBean("testTicket1");
         Ticket ticket2 = (Ticket) applicationContext.getBean("testTicket2");
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(5, 6), user,
-                                                   ticket1.getPrice()));
+                ticket1.getPrice()));
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(7, 8), user,
-                                                   ticket1.getPrice()));
+                ticket1.getPrice()));
         bookingService.bookTicket(user, new Ticket(ticket2.getEvent(), ticket2.getDateTime(), Arrays.asList(7, 8), user,
-                                                   ticket2.getPrice()));
+                ticket2.getPrice()));
         HashMap<String, Integer> expected = new HashMap<String, Integer>() {{
             put(ticket1.getEvent().getName(), 2);
             put(ticket2.getEvent().getName(), 1);

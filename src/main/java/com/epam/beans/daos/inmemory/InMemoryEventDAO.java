@@ -11,6 +11,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/3/2016
+ * Time: 10:41 AM
+ */
 @Repository("inMemoryEventDAO")
 public class InMemoryEventDAO implements EventDAO {
 
@@ -33,6 +39,11 @@ public class InMemoryEventDAO implements EventDAO {
             throw new IllegalStateException(String.format(
                     "Unable to assign auditorium: [%s] for event: [%s] on date: [%s]. Auditorium is assigned for other events: [%s]",
                     event.getAuditorium(), event.getName(), event.getDateTime(), assignedEvents));
+    }
+
+    @Override
+    public Event getById(Long id) {
+        return null;
     }
 
     @Override

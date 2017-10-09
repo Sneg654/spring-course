@@ -9,6 +9,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/4/2016
+ * Time: 11:25 AM
+ */
 @Component("ticketsStrategy")
 @PropertySource({"classpath:strategies/strategies.properties"})
 @Transactional

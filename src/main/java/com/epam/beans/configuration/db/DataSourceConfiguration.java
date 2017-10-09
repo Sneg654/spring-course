@@ -5,11 +5,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 20/2/16
+ * Time: 3:49 PM
+ */
 @Configuration
+@EnableTransactionManagement
 @PropertySource("classpath:db.properties")
 public class DataSourceConfiguration {
 

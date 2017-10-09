@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/4/2016
+ * Time: 11:09 AM
+ */
 @Repository(value = "inMemoryAuditoriumDAO")
 public class InMemoryAuditoriumDAO implements AuditoriumDAO {
 

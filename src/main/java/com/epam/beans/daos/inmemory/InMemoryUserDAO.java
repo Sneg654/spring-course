@@ -1,12 +1,19 @@
 package com.epam.beans.daos.inmemory;
 
 import com.epam.beans.daos.UserDAO;
+import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/2/2016
+ * Time: 11:41 AM
+ */
 @Repository("inMemoryUserDAO")
 public class InMemoryUserDAO implements UserDAO {
 
@@ -56,12 +63,22 @@ public class InMemoryUserDAO implements UserDAO {
         return dbEmailIndex.get(email);
     }
 
+    @Override
+    public User getByLogin(String login) {
+         throw new UnsupportedOperationException("not implemented here");
+    }
+
     public List<User> getAllByName(String name) {
-        return dbNameIndex.get(name).stream().collect(Collectors.toList());
+        return new ArrayList<>(dbNameIndex.get(name));
     }
 
     @Override
     public List<User> getAll() {
-        return db.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(db.values());
+    }
+
+    @Override
+    public List<Ticket> getBookedTickets(User user) {
+         throw new UnsupportedOperationException("not implemented here ");
     }
 }

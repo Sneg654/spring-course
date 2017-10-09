@@ -1,18 +1,25 @@
 package com.epam.beans.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/1/2016
+ * Time: 7:35 PM
+ */
 public class User {
-
-    private  String lastName;
-
-    public String getLastName() {
-        return lastName;
-    }
 
     private long      id;
     private String    email;
     private String    name;
+    private String    login;
+    private String    password;
+    private UserRole  userRole;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     public User() {
@@ -25,17 +32,47 @@ public class User {
         this.birthday = birthday;
     }
 
+    public User(long id, String email, String name, String login, String password, UserRole userRole, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.login = login;
+        this.password = password;
+        this.userRole = userRole;
+        this.birthday = birthday;
+    }
+
     public User(String email, String name, LocalDate birthday) {
         this(-1, email, name, birthday);
     }
 
-    public User(String bill, String gates) {
-        this.name = bill;
-        this.lastName=gates;
-    }
-
     public User withId(long id) {
         return new User(id, email, name, birthday);
+    }
+
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserRole() {
+        return userRole.name();
+    }
+
+    public void setUserRole(String userRole) {
+        this.userRole = UserRole.valueOf(userRole);
     }
 
     public long getId() {

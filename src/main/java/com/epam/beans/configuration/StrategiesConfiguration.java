@@ -9,6 +9,12 @@ import org.springframework.context.annotation.Configuration;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 13/2/16
+ * Time: 3:36 PM
+ */
 @Configuration
 public class StrategiesConfiguration {
 
