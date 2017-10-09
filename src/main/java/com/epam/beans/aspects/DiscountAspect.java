@@ -13,8 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/11/2016
+ * Time: 10:23 AM
+ */
 @Aspect
-@Component
 public class DiscountAspect {
 
     protected static final Map<String, Map<String, Integer>> discountPerUserCounter = new HashMap<>();

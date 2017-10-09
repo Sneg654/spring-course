@@ -7,7 +7,12 @@ import com.epam.beans.models.User;
 import java.util.List;
 import java.util.Objects;
 
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/4/2016
+ * Time: 10:21 AM
+ */
 public interface BookingDAO {
 
     Ticket create(User user, Ticket ticket);

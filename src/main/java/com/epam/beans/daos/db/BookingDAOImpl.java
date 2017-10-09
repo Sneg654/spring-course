@@ -8,10 +8,18 @@ import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 20/2/16
+ * Time: 9:00 PM
+ */
 @Repository("bookingDAO")
+@Transactional
 public class BookingDAOImpl extends AbstractDAO implements BookingDAO {
 
     @Override
@@ -62,7 +70,6 @@ public class BookingDAOImpl extends AbstractDAO implements BookingDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<Ticket> getAllTickets() {
-        Query query = getCurrentSession().createQuery("select b.ticket from Booking b");
-        return ((List<Ticket>) query.list());
+        return ((List<Ticket>) createBlankCriteria(Ticket.class).list());
     }
 }

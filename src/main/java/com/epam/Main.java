@@ -3,10 +3,18 @@ package com.epam;
 import com.epam.beans.aspects.CounterAspect;
 import com.epam.beans.aspects.DiscountAspect;
 import com.epam.beans.aspects.LuckyWinnerAspect;
+import com.epam.beans.configuration.AppConfiguration;
+import com.epam.beans.configuration.db.DataSourceConfiguration;
+import com.epam.beans.configuration.db.DbSessionFactory;
 import com.epam.beans.models.*;
 import com.epam.beans.services.*;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +23,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/4/2016
+ * Time: 12:06 PM
+ */
 public class Main {
 
     public static void main(String[] args) {

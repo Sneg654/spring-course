@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/4/2016
+ * Time: 10:59 AM
+ */
 @Repository("inMemoryBookingDAO")
 public class InMemoryBookingDAO implements BookingDAO {
 

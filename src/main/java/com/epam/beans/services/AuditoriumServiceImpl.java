@@ -9,7 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 2/3/2016
+ * Time: 11:14 AM
+ */
 @Service("auditoriumServiceImpl")
 @Transactional
 public class AuditoriumServiceImpl implements AuditoriumService {
@@ -39,5 +44,15 @@ public class AuditoriumServiceImpl implements AuditoriumService {
     @Override
     public List<Integer> getVipSeats(String auditoriumName) {
         return auditoriumDAO.getByName(auditoriumName).getVipSeatsList();
+    }
+
+    @Override
+    public void delete(Auditorium auditorium) {
+        auditoriumDAO.delete(auditorium);
+    }
+
+    @Override
+    public Auditorium add(Auditorium auditorium) {
+        return auditoriumDAO.add(auditorium);
     }
 }
