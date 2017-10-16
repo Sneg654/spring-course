@@ -4,10 +4,7 @@ import com.epam.beans.aspects.mocks.DiscountAspectMock;
 import com.epam.beans.configuration.AppConfiguration;
 import com.epam.beans.configuration.db.DataSourceConfiguration;
 import com.epam.beans.configuration.db.DbSessionFactory;
-import com.epam.beans.daos.mocks.BookingDAOBookingMock;
-import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
-import com.epam.beans.daos.mocks.EventDAOMock;
-import com.epam.beans.daos.mocks.UserDAOMock;
+import com.epam.beans.daos.mocks.*;
 import com.epam.beans.models.Event;
 import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
@@ -20,9 +17,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -37,6 +37,8 @@ import static junit.framework.Assert.assertEquals;
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
                                  com.epam.beans.configuration.TestAspectsConfiguration.class})
 @Transactional
+@WebAppConfiguration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestDiscountAspect {
 
     @Autowired
@@ -44,9 +46,6 @@ public class TestDiscountAspect {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private EventService eventService;
 
     @Autowired
     private BookingDAOBookingMock bookingDAOBookingMock;
@@ -58,27 +57,32 @@ public class TestDiscountAspect {
     private UserDAOMock userDAOMock;
 
     @Autowired
-    private DiscountAspectMock discountAspect;
+    private DBAuditoriumDAOMock auditoriumDAOMock;
 
     @Autowired
-    private DBAuditoriumDAOMock auditoriumDAOMock;
+    private UserAccountDAOMock userAccountDAOMock;
+
+    @Value("#{discountAspectMock}")
+    private DiscountAspectMock discountAspectMock;
 
     @Before
     public void init() {
-        DiscountAspectMock.cleanup();
         auditoriumDAOMock.init();
         userDAOMock.init();
+        discountAspectMock.cleanup();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
+        userAccountDAOMock.init();
     }
 
     @After
     public void cleanup() {
-        DiscountAspectMock.cleanup();
+        discountAspectMock.cleanup();
         auditoriumDAOMock.cleanup();
-        userDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userAccountDAOMock.cleanup();
+        userDAOMock.cleanup();
     }
 
     @Test

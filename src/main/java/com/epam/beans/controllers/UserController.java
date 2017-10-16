@@ -2,6 +2,8 @@ package com.epam.beans.controllers;
 
 import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
+import com.epam.beans.models.UserAccount;
+import com.epam.beans.services.UserAccountService;
 import com.epam.beans.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,10 +23,16 @@ public class UserController {
     @Qualifier("userServiceImpl")
     private UserService userServiceImpl;
 
+    @Autowired
+    @Qualifier("userAccountServiceImpl")
+    private UserAccountService userAccountServiceImpl;
+
     /**
      * List of users to get data from Database
      */
     private List<User> userList = new ArrayList<>();
+
+    private List<UserAccount> accountList = new ArrayList<>();
 
 
     /**
@@ -37,7 +45,9 @@ public class UserController {
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String index(@ModelAttribute("model") ModelMap model) throws Exception {
         userList = userServiceImpl.getAll();
+        accountList = userAccountServiceImpl.getAll();
         model.addAttribute("userList", userList);
+        model.addAttribute("accountList", accountList);
         return "users";
     }
 
@@ -112,6 +122,21 @@ public class UserController {
         userList.add(user);
         model.addAttribute("userList", userList);
         return "found-users";
+    }
+
+    /**
+     * Refill user account
+     *
+     * @param userAccount
+     * @return Redirect to /users page to display user list
+     */
+    @RequestMapping(value = "/refillUserAccount", method = RequestMethod.POST)
+    public String refillUserAccount(@ModelAttribute("UserAccount") UserAccount userAccount, ModelMap model) throws Exception {
+        userAccountServiceImpl.refillAccount(userAccount);
+        accountList = userAccountServiceImpl.getAll();
+        model.addAttribute("userList", userList);
+        model.addAttribute("accountList", accountList);
+        return "redirect:users";
     }
 
 

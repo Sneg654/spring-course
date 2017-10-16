@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user>
+  <login>john</login>
+  <password>123456</password>
+  <name>john</name>
+  <birthday>1995-05-21</birthday>
+  <email>apload@gmail.com</email>
+  <role>REGISTERED_USER</role>
+</user>

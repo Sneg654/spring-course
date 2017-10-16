@@ -3,7 +3,9 @@ package com.epam.beans.daos;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +17,9 @@ public abstract class AbstractDAO {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    protected PlatformTransactionManager transactionManager;
 
     protected Session getCurrentSession() {return sessionFactory.getCurrentSession();}
 

@@ -4,13 +4,8 @@ import com.epam.beans.configuration.AppConfiguration;
 import com.epam.beans.configuration.TestBookingServiceConfiguration;
 import com.epam.beans.configuration.db.DataSourceConfiguration;
 import com.epam.beans.configuration.db.DbSessionFactory;
-import com.epam.beans.daos.mocks.BookingDAOBookingMock;
-import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
-import com.epam.beans.daos.mocks.EventDAOMock;
-import com.epam.beans.daos.mocks.UserDAOMock;
-import com.epam.beans.models.Event;
-import com.epam.beans.models.Ticket;
-import com.epam.beans.models.User;
+import com.epam.beans.daos.mocks.*;
+import com.epam.beans.models.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,8 +14,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -38,13 +35,15 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
                                  TestBookingServiceConfiguration.class})
 @Transactional
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@WebAppConfiguration
+
 public class BookingServiceImplTest {
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    @Value("#{testBookingServiceImpl}")
+    @Value("#{bookingServiceImpl}")
     private BookingService bookingService;
 
     @Autowired
@@ -56,16 +55,21 @@ public class BookingServiceImplTest {
     @Autowired
     private DBAuditoriumDAOMock   auditoriumDAOMock;
 
+    @Autowired
+    private UserAccountDAOMock userAccountDAOMock;
+
     @Before
     public void init() {
         auditoriumDAOMock.init();
         userDAOMock.init();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
+        userAccountDAOMock.init();
     }
 
     @After
     public void cleanup() {
+        userAccountDAOMock.cleanup();
         auditoriumDAOMock.cleanup();
         userDAOMock.cleanup();
         eventDAOMock.cleanup();
@@ -96,9 +100,6 @@ public class BookingServiceImplTest {
     @Test(expected = RuntimeException.class)
     public void testBookTicket_AlreadyBooked() throws Exception {
         Event testEvent1 = (Event) applicationContext.getBean("testEvent1");
-        List<Ticket> before = bookingService.getTicketsForEvent(testEvent1.getName(),
-                                                                testEvent1.getAuditorium().getName(),
-                                                                testEvent1.getDateTime());
         User testUser2 = (User) applicationContext.getBean("testUser2");
         Ticket newTicket = new Ticket(testEvent1, LocalDateTime.now(), Arrays.asList(3, 4), testUser2, 0.0);
         bookingService.bookTicket(testUser2, newTicket);
@@ -106,19 +107,12 @@ public class BookingServiceImplTest {
 
     @Test
     public void testBookTicket() throws Exception {
-        Event testEvent1 = (Event) applicationContext.getBean("testEvent1");
-        List<Ticket> before = bookingService.getTicketsForEvent(testEvent1.getName(),
-                                                                testEvent1.getAuditorium().getName(),
-                                                                testEvent1.getDateTime());
         User testUser1 = (User) applicationContext.getBean("testUser1");
-        Ticket newTicket = new Ticket(testEvent1, LocalDateTime.now(), Arrays.asList(5, 6), testUser1, 0.0);
-        Ticket bookedTicket = bookingService.bookTicket(testUser1, newTicket);
-        List<Ticket> after = bookingService.getTicketsForEvent(testEvent1.getName(),
-                                                               testEvent1.getAuditorium().getName(),
-                                                               testEvent1.getDateTime());
-        before.add(bookedTicket);
-        assertTrue("Events should change", after.containsAll(before));
-        assertTrue("Events should change", before.containsAll(after));
+        Event testEvent1 = (Event) applicationContext.getBean("testEvent1");
+        Ticket newTicket = new Ticket(testEvent1, testEvent1.getDateTime(), Arrays.asList(5, 6), testUser1, 0.0);
+        bookingService.bookTicket(testUser1, newTicket);
+        List<Ticket> ticketList = bookingService.getAllTickets();
+        assertTrue("Ticket should be contained in list", ticketList.contains(newTicket));
     }
 
     @Test
@@ -134,7 +128,7 @@ public class BookingServiceImplTest {
     @Test
     public void testGetTicketPrice_WithoutDiscount() throws Exception {
         Ticket ticket = (Ticket) applicationContext.getBean("testTicket1");
-        User user = userDAOMock.create(new User("dadsada", "asdasda", LocalDate.now().minus(1, ChronoUnit.DAYS)));
+        User user = userDAOMock.create(new User(-1, "dadsada", "asdasda", "ss", "123456", UserRole.REGISTERED_USER,LocalDate.now().minus(1, ChronoUnit.DAYS)));
         Event event = ticket.getEvent();
         double ticketPrice = bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(),
                                                            event.getDateTime(), ticket.getSeatsList(), user);
@@ -144,13 +138,19 @@ public class BookingServiceImplTest {
     @Test
     public void testGetTicketPrice_DiscountsForTicketsAndForBirthday() throws Exception {
         Ticket ticket = (Ticket) applicationContext.getBean("testTicket1");
-        User testUser = new User(UUID.randomUUID().toString(), UUID.randomUUID().toString(), LocalDate.now());
+        User testUser = new User(99, UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UserRole.REGISTERED_USER, LocalDate.now());
         User registeredUser = userDAOMock.create(testUser);
+        UserAccount userAccount = new UserAccount();
+        userAccount.setId(99);
+        userAccount.setUser(registeredUser);
+        userAccount.setPrepaidUserMoney(5000);
+        userAccountDAOMock.refillAccount(userAccount);
+
         bookingService.bookTicket(registeredUser,
-                                  new Ticket(ticket.getEvent(), LocalDateTime.now(), Collections.singletonList(1),
+                                  new Ticket(ticket.getEvent(), ticket.getDateTime(), Collections.singletonList(1),
                                              registeredUser, 0.0));
         bookingService.bookTicket(registeredUser,
-                                  new Ticket(ticket.getEvent(), LocalDateTime.now(), Collections.singletonList(2),
+                                  new Ticket(ticket.getEvent(), ticket.getDateTime(), Collections.singletonList(2),
                                              registeredUser, 0.0));
         Event event = ticket.getEvent();
         double ticketPrice = bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(),
@@ -161,18 +161,24 @@ public class BookingServiceImplTest {
 
     @Test
     public void testGetTicketPrice_DiscountsForTicketsAndForBirthday_MidRate() throws Exception {
-        Ticket ticket = (Ticket) applicationContext.getBean("testTicket2");
-        User testUser = new User(UUID.randomUUID().toString(), UUID.randomUUID().toString(), LocalDate.now());
+        Ticket ticket = (Ticket) applicationContext.getBean("testTicket1");
+        User testUser = new User(99, UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UserRole.REGISTERED_USER, LocalDate.now());
         User registeredUser = userDAOMock.create(testUser);
+        UserAccount userAccount = new UserAccount();
+        userAccount.setId(99);
+        userAccount.setUser(registeredUser);
+        userAccount.setPrepaidUserMoney(5000);
+        userAccountDAOMock.refillAccount(userAccount);
+
         bookingService.bookTicket(registeredUser,
-                                  new Ticket(ticket.getEvent(), LocalDateTime.now(), Collections.singletonList(3),
-                                             registeredUser, 0.0));
+                new Ticket(ticket.getEvent(), ticket.getDateTime(), Collections.singletonList(1),
+                        registeredUser, 0.0));
         bookingService.bookTicket(registeredUser,
-                                  new Ticket(ticket.getEvent(), LocalDateTime.now(), Collections.singletonList(4),
-                                             registeredUser, 0.0));
+                new Ticket(ticket.getEvent(), ticket.getDateTime(), Collections.singletonList(2),
+                        registeredUser, 0.0));
         Event event = ticket.getEvent();
         double ticketPrice = bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(),
                                                            event.getDateTime(), Arrays.asList(5, 6, 7), registeredUser);
-        Assert.assertEquals("Price is wrong", 525, ticketPrice, 0.00001);
+        Assert.assertEquals("Price is wrong", 208.31999999999996, ticketPrice, 0.00001);
     }
 }

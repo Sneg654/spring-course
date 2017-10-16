@@ -1,6 +1,7 @@
 package com.epam.beans.services;
 
 import com.epam.beans.configuration.AppConfiguration;
+import com.epam.beans.configuration.WebAppInitializer;
 import com.epam.beans.configuration.db.DataSourceConfiguration;
 import com.epam.beans.configuration.db.DbSessionFactory;
 import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
@@ -11,9 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
@@ -21,17 +27,26 @@ import static junit.framework.Assert.assertEquals;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class, com.epam.beans.configuration.TestAuditoriumConfiguration.class})
+@ContextConfiguration(classes = {AppConfiguration.class,
+        WebAppInitializer.class,DataSourceConfiguration.class,
+        DbSessionFactory.class, com.epam.beans.configuration.
+        TestAuditoriumConfiguration.class})
 @Transactional
+@WebAppConfiguration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class AuditoriumServiceImplTest {
 
     public static final int AUDITORIUMS_COUNT = 2;
     @Autowired
     private AuditoriumService   auditoriumService;
+
     @Autowired
-    private ApplicationContext  applicationContext;
+    private WebApplicationContext webApplicationContext;
+
     @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
+
+    private MockMvc mockMvc;
 
     private Auditorium testHall1;
     private Auditorium testHall2;
@@ -39,8 +54,9 @@ public class AuditoriumServiceImplTest {
     @Before
     public void init() {
         auditoriumDAOMock.init();
-        testHall1 = (Auditorium) applicationContext.getBean("testHall1");
-        testHall2 = (Auditorium) applicationContext.getBean("testHall2");
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        testHall1 = webApplicationContext.getBean("testHall1", Auditorium.class);
+        testHall2 = webApplicationContext.getBean("testHall2", Auditorium.class);
     }
 
     @After

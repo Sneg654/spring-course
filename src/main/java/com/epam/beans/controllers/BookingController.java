@@ -1,6 +1,5 @@
 package com.epam.beans.controllers;
 
-import com.epam.beans.models.Event;
 import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
 import com.epam.beans.services.BookingService;
@@ -38,27 +37,15 @@ public class BookingController {
 
     @RequestMapping(value = "/tickets", method = RequestMethod.GET)
     public String getAllTickets(ModelMap model) {
-        ticketList =  bookingServiceImpl.getAllTickets();
+        ticketList = bookingServiceImpl.getAllTickets();
         model.addAttribute("ticketList", ticketList);
         return "tickets";
     }
 
-
     @RequestMapping(value = "/book", method = RequestMethod.POST)
     public String bookTicket(Ticket ticket, ModelMap model) {
         User user = userServiceImpl.getById(ticket.getUser().getId());
-        if(!ticketList.isEmpty()) ticketList.clear();
-        List<Integer> bookedSeatsList = new ArrayList<>();
-        if (ticket.getSeats().contains(",")) {
-            for (String s : ticket.getSeats().split(",")) {
-                bookedSeatsList.add(Integer.valueOf(s));
-            }
-        } else {
-            bookedSeatsList.add(Integer.valueOf(ticket.getSeats()));
-        }
-        Event event = eventServiceImpl.getById(ticket.getEvent().getId());
-        double ticketPrice = bookingServiceImpl.getTicketPrice(event.getName(),
-                event.getAuditorium().getName(), ticket.getDateTime(),bookedSeatsList, user);
+        if (!ticketList.isEmpty()) ticketList.clear();
         Ticket bookedTicket = bookingServiceImpl.bookTicket(user, ticket);
         bookedTicket.setEvent(eventServiceImpl.getById(ticket.getEvent().getId()));
         bookedTicket.setUser(userServiceImpl.getById(ticket.getUser().getId()));
@@ -66,7 +53,6 @@ public class BookingController {
         model.addAttribute("ticketList", ticketList);
         return "booked-tickets";
     }
-
 
 
 }

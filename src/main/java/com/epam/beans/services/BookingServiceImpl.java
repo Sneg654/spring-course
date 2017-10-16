@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @Service("bookingServiceImpl")
 @PropertySource({"classpath:strategies/booking.properties"})
-@Transactional(propagation = Propagation.SUPPORTS, readOnly=true)
+@Transactional
 public class BookingServiceImpl implements BookingService {
 
     private final EventService      eventService;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserService       userService;
     private final BookingDAO        bookingDAO;
     private final DiscountService   discountService;
+    private final UserAccountService userAccountService;
     final         int               minSeatNumber;
     final         double            vipSeatPriceMultiplier;
     final         double            highRatedPriceMultiplier;
@@ -43,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
                               @Qualifier("userServiceImpl") UserService userService,
                               @Qualifier("discountServiceImpl") DiscountService discountService,
                               @Qualifier("bookingDAO") BookingDAO bookingDAO,
+                              @Qualifier("userAccountServiceImpl") UserAccountService userAccountService,
                               @Value("${min.seat.number}") int minSeatNumber,
                               @Value("${vip.seat.price.multiplier}") double vipSeatPriceMultiplier,
                               @Value("${high.rate.price.multiplier}") double highRatedPriceMultiplier,
@@ -52,6 +55,7 @@ public class BookingServiceImpl implements BookingService {
         this.userService = userService;
         this.bookingDAO = bookingDAO;
         this.discountService = discountService;
+        this.userAccountService = userAccountService;
         this.minSeatNumber = minSeatNumber;
         this.vipSeatPriceMultiplier = vipSeatPriceMultiplier;
         this.highRatedPriceMultiplier = highRatedPriceMultiplier;
@@ -117,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRED, readOnly=false)
+    @Transactional(propagation = Propagation.MANDATORY)
     public Ticket bookTicket(User user, Ticket ticket) {
         if (Objects.isNull(user)) {
             throw new NullPointerException("User is [null]");
@@ -131,11 +135,24 @@ public class BookingServiceImpl implements BookingService {
         boolean seatsAreAlreadyBooked = bookedTickets.stream().anyMatch(bookedTicket -> ticket.getSeatsList().stream().anyMatch(
                 bookedTicket.getSeatsList() :: contains));
 
-        if (!seatsAreAlreadyBooked)
-            bookingDAO.create(user, ticket);
-        else
-            throw new IllegalStateException("Unable to book ticket: [" + ticket + "]. Seats are already booked.");
+        if (!seatsAreAlreadyBooked){
+        List<Integer> bookedSeatsList = new ArrayList<>();
+        if (ticket.getSeats().contains(",")) {
+            for (String s : ticket.getSeats().split(",")) {
+                bookedSeatsList.add(Integer.valueOf(s));
+            }
+        } else {
+            bookedSeatsList.add(Integer.valueOf(ticket.getSeats()));
+        }
+        Event event = eventService.getById(ticket.getEvent().getId());
+        double ticketPrice = getTicketPrice(event.getName(),
+                event.getAuditorium().getName(), ticket.getDateTime(),bookedSeatsList, user);
 
+        userAccountService.withdraw(user, ticketPrice);
+        bookingDAO.create(user, ticket);
+        } else {
+            throw new IllegalStateException("Unable to book ticket: [" + ticket + "]. Seats are already booked.");
+        }
         return ticket;
     }
 
@@ -147,16 +164,19 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Ticket> getAllTickets() {
         return bookingDAO.getAllTickets();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Ticket> getTickets(Event event) {
         return bookingDAO.getTickets(event);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Ticket> getTickets(User user) {
         return bookingDAO.getTickets(user);
     }

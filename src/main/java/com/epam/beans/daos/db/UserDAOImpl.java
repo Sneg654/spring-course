@@ -9,19 +9,17 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Dmytro_Babichev
- * Date: 20/2/16
- * Time: 4:35 PM
- */
+
 @Repository(value = "userDAO")
 @Transactional
 public class UserDAOImpl extends AbstractDAO implements UserDAO {
@@ -36,7 +34,16 @@ public class UserDAOImpl extends AbstractDAO implements UserDAO {
                     String.format("Unable to store user: [%s]. User with such login or email: [%s] {%s} is already created.", user,
                                   user.getEmail(), user.getLogin()));
         } else {
-            Long userId = (Long) getCurrentSession().save(user);
+            TransactionDefinition txDef = new DefaultTransactionDefinition();
+            TransactionStatus txStatus = transactionManager.getTransaction(txDef);
+            Long userId;
+            try {
+                userId  = (Long) getCurrentSession().save(user);
+                transactionManager.commit(txStatus);
+           } catch(Exception e){
+                transactionManager.rollback(txStatus);
+                throw e;
+            }
             return user.withId(userId);
         }
     }

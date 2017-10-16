@@ -1,5 +1,7 @@
 package com.epam.beans.configuration;
 
+import com.epam.beans.configuration.db.DataSourceConfiguration;
+import com.epam.beans.configuration.db.DbSessionFactory;
 import com.epam.beans.daos.AuditoriumDAO;
 import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
 import com.epam.beans.models.Auditorium;
@@ -7,11 +9,18 @@ import com.epam.beans.services.AuditoriumService;
 import com.epam.beans.services.AuditoriumServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
+@WebAppConfiguration
+@ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
+        com.epam.beans.configuration.TestAspectsConfiguration.class})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestAuditoriumConfiguration {
 
     @Bean

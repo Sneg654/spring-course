@@ -1,12 +1,14 @@
 package com.epam.beans.models;
 
-public class UserAccount {
+import java.io.Serializable;
+
+public class UserAccount implements Serializable{
 
     private long id;
 
     private User user;
 
-    private Double prepaidUserMoney;
+    private double prepaidUserMoney;
 
     public long getId() {
         return id;
@@ -24,11 +26,11 @@ public class UserAccount {
         this.user = user;
     }
 
-    public Double getPrepaidUserMoney() {
+    public double getPrepaidUserMoney() {
         return prepaidUserMoney;
     }
 
-    public void setPrepaidUserMoney(Double prepaidUserMoney) {
+    public void setPrepaidUserMoney(double prepaidUserMoney) {
         this.prepaidUserMoney = prepaidUserMoney;
     }
 }

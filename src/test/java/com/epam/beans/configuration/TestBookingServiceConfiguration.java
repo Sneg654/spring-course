@@ -1,9 +1,8 @@
 package com.epam.beans.configuration;
 
-import com.epam.beans.daos.AuditoriumDAO;
-import com.epam.beans.daos.BookingDAO;
-import com.epam.beans.daos.EventDAO;
-import com.epam.beans.daos.UserDAO;
+import com.epam.beans.configuration.db.DataSourceConfiguration;
+import com.epam.beans.configuration.db.DbSessionFactory;
+import com.epam.beans.daos.*;
 import com.epam.beans.daos.mocks.*;
 import com.epam.beans.models.*;
 import com.epam.beans.services.*;
@@ -12,10 +11,17 @@ import com.epam.beans.services.discount.DiscountStrategy;
 import com.epam.beans.services.discount.TicketsStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.*;
 
 @Configuration
+@WebAppConfiguration
+@ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
+        com.epam.beans.configuration.TestAspectsConfiguration.class})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestBookingServiceConfiguration {
 
     @Bean
@@ -59,7 +65,7 @@ public class TestBookingServiceConfiguration {
 
     @Bean
     public Event testEvent1() {
-        return new Event(1, "Test event", com.epam.beans.models.Rate.HIGH, 124.0, java.time.LocalDateTime.of(2016, 2, 6, 14, 45, 0),
+        return new Event(1, "Test event1", com.epam.beans.models.Rate.HIGH, 124.0, java.time.LocalDateTime.of(2016, 2, 6, 14, 45, 0),
                          testHall1());
     }
 
@@ -71,12 +77,12 @@ public class TestBookingServiceConfiguration {
 
     @Bean
     public User testUser1() {
-        return new User(0, "dmitriy.vbabichev@gmail.com", "Dmytro Babichev", java.time.LocalDate.of(1992, 4, 29));
+        return new User(1, "dmitriy.vbabichev@gmail.com", "Dmytro Babichev", "Dmitro", "123456", UserRole.REGISTERED_USER, java.time.LocalDate.of(1992, 4, 29));
     }
 
     @Bean
     public User testUser2() {
-        return new User(1, "laory@yandex.ru", "Dmytro Babichev", java.time.LocalDate.of(1992, 4, 29));
+        return new User(2, "laory@yandex.ru", "Oleg", "Oleg", "123456", UserRole.REGISTERED_USER, java.time.LocalDate.of(1991, 2, 21));
     }
 
     @Bean
@@ -119,7 +125,7 @@ public class TestBookingServiceConfiguration {
 
     @Bean
     public UserDAO userDAOMock() {
-        return new UserDAOMock(Arrays.asList(testUser1()));
+        return new UserDAOMock(Arrays.asList(testUser1(), testUser2()));
     }
 
     @Bean
@@ -127,9 +133,34 @@ public class TestBookingServiceConfiguration {
         return new UserServiceImpl(userDAOMock());
     }
 
-    @Bean(name = "testBookingServiceImpl")
+    @Bean(name = "testUserAccountServiceImpl")
+    public UserAccountService userAccountServiceImpl(){
+        return new UserAccountServiceImpl(userAccountDAOMock());
+    }
+
+    @Bean
+    public UserAccountDAO userAccountDAOMock() {
+        return new UserAccountDAOMock(getUserAccounts());
+    }
+
+    private List<UserAccount> getUserAccounts(){
+        List<UserAccount> userAccounts = new ArrayList<>();
+        UserAccount userAccount1 = new UserAccount();
+        userAccount1.setId(1);
+        userAccount1.setUser(testUser1());
+        userAccount1.setPrepaidUserMoney(5000);
+        UserAccount userAccount2 = new UserAccount();
+        userAccount2.setId(2);
+        userAccount2.setUser(testUser2());
+        userAccount2.setPrepaidUserMoney(5000);
+        userAccounts.add(userAccount1);
+        userAccounts.add(userAccount2);
+        return userAccounts;
+    }
+
+    @Bean(name = "bookingServiceImpl")
     public BookingService bookingServiceImpl() {
         return new BookingServiceImpl(eventServiceImpl(), auditoriumServiceImpl(), userServiceImpl(),
-                                      discountBookingServiceImpl(), bookingBookingDAO(), 1, 2, 1.2, 1);
+                                      discountBookingServiceImpl(), bookingBookingDAO(), userAccountServiceImpl(), 1, 2, 1.2, 1);
     }
 }

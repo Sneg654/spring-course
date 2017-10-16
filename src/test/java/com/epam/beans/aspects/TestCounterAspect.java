@@ -4,10 +4,7 @@ import com.epam.beans.aspects.mocks.CountAspectMock;
 import com.epam.beans.configuration.AppConfiguration;
 import com.epam.beans.configuration.db.DataSourceConfiguration;
 import com.epam.beans.configuration.db.DbSessionFactory;
-import com.epam.beans.daos.mocks.BookingDAOBookingMock;
-import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
-import com.epam.beans.daos.mocks.EventDAOMock;
-import com.epam.beans.daos.mocks.UserDAOMock;
+import com.epam.beans.daos.mocks.*;
 import com.epam.beans.models.Event;
 import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
@@ -19,8 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -31,8 +30,10 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
-        com.epam.beans.configuration.TestAspectsConfiguration.class})
+                                 com.epam.beans.configuration.TestAspectsConfiguration.class})
 @Transactional
+@WebAppConfiguration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestCounterAspect {
 
     @Autowired
@@ -54,7 +55,10 @@ public class TestCounterAspect {
     private UserDAOMock userDAOMock;
 
     @Autowired
-    private CounterAspect counterAspect;
+    private CounterAspect       counterAspect;
+
+    @Autowired
+    private UserAccountDAOMock userAccountDAOMock;
 
     @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
@@ -66,15 +70,18 @@ public class TestCounterAspect {
         userDAOMock.init();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
+        userAccountDAOMock.init();
     }
 
     @After
     public void cleanup() {
         CountAspectMock.cleanup();
         auditoriumDAOMock.cleanup();
-        userDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userAccountDAOMock.cleanup();
+        userDAOMock.cleanup();
+
     }
 
     @Test
@@ -103,9 +110,9 @@ public class TestCounterAspect {
         User user = (User) applicationContext.getBean("testUser1");
         List<Integer> seats = Arrays.asList(1, 2, 3, 4);
         bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(), event.getDateTime(), seats,
-                user);
+                                      user);
         bookingService.getTicketPrice(event.getName(), event.getAuditorium().getName(), event.getDateTime(), seats,
-                user);
+                                      user);
         HashMap<String, Integer> expected = new HashMap<String, Integer>() {{
             put(event.getName(), 2);
         }};
@@ -116,16 +123,16 @@ public class TestCounterAspect {
     public void testBookTicketByName() {
         User user = (User) applicationContext.getBean("testUser1");
         Ticket ticket1 = (Ticket) applicationContext.getBean("testTicket1");
-        Ticket ticket2 = (Ticket) applicationContext.getBean("testTicket2");
+
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(5, 6), user,
-                ticket1.getPrice()));
+                                                   ticket1.getPrice()));
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(7, 8), user,
-                ticket1.getPrice()));
-        bookingService.bookTicket(user, new Ticket(ticket2.getEvent(), ticket2.getDateTime(), Arrays.asList(7, 8), user,
-                ticket2.getPrice()));
+                                                   ticket1.getPrice()));
+        bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(9, 10), user,
+                                                   ticket1.getPrice()));
         HashMap<String, Integer> expected = new HashMap<String, Integer>() {{
-            put(ticket1.getEvent().getName(), 2);
-            put(ticket2.getEvent().getName(), 1);
+            put(ticket1.getEvent().getName(), 3);
+
         }};
         assertEquals(expected, CounterAspect.getBookTicketByNameStat());
     }

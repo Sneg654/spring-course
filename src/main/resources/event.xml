@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event>
+  <name>testevent6</name>
+  <event_date>2017-07-23</event_date>
+  <base_price>5.2</base_price> 
+  <rate>MID</rate>
+  <auditorium>
+      <id>1</id>
+      <name>Blue hall</name>
+	  <seats_number>500</seats_number>
+      <vip_seats>25,26,27,28,29,30,31,32,33,34,35</vip_seats> 
+  </auditorium>  
+</event>
