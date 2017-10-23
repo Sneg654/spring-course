@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Aspect
-@Component
 public class CounterAspect {
 
     protected static final Map<String, Integer> accessByNameCounter   = new HashMap<>();

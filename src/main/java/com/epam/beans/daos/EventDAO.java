@@ -13,6 +13,8 @@ public interface EventDAO {
 
     Event update(Event event);
 
+    Event getById(Long id);
+
     Event get(String eventName, Auditorium auditoriumName, LocalDateTime dateTime);
 
     void delete(Event event);

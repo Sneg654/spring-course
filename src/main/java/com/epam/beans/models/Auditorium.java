@@ -1,9 +1,16 @@
 package com.epam.beans.models;
 
-import com.epam.util.CsvUtil;
+import com.epam.beans.utils.CsvUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
+@XmlRootElement(name = "auditorium")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Auditorium", propOrder = {"id", "name", "seatsNumber", "vipSeats"})
 public class Auditorium {
 
     private long   id;

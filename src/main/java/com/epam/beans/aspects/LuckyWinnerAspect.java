@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Aspect
-@Component
 @PropertySource({"classpath:aspects/aspects.properties"})
 public class LuckyWinnerAspect {
 
@@ -47,6 +47,6 @@ public class LuckyWinnerAspect {
     }
 
     public static List<String> getLuckyUsers() {
-        return luckyUsers.stream().collect(Collectors.toList());
+        return new ArrayList<>(luckyUsers);
     }
 }

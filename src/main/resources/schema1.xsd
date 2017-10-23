@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" xmlns:tns="http://epam.com"
+      targetNamespace="http://epam.com" elementFormDefault="qualified">
+
+  <xs:element name="auditorium" type="tns:Auditorium"/>
+
+  <xs:element name="event" type="tns:Event"/>
+
+  <xs:element name="user" type="tns:User"/>
+
+  <xs:element name="rate" type="tns:rate"/>
+
+  <xs:element name="userRole" type="tns:userRole"/>
+
+  <xs:element name="getUserByIdRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:long"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="getUserByIdResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user" type="tns:User"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="registerUserRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user" type="tns:User"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="registerUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user" type="tns:User"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="removeUserRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:long"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="removeUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="getEventByIdRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:long"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="getEventByIdResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="event" type="tns:Event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="createEventRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="event" type="tns:Event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="createEventResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="event" type="tns:Event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="removeEventRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:long"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="removeEventResponse">
+    <xs:complexType>
+      <xs:sequence>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:complexType name="Auditorium">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element name="seatsNumber" type="xs:int"/>
+      <xs:element minOccurs="0" name="vipSeats" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Event">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="rate" type="tns:rate"/>
+      <xs:element name="basePrice" type="xs:double"/>
+      <xs:element minOccurs="0" name="dateTime" type="xs:string"/>
+      <xs:element minOccurs="0" ref="tns:auditorium"/>
+      <xs:element minOccurs="0" name="auditoriumName" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="User">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="email" type="xs:string"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" name="birthday" type="xs:string"/>
+      <xs:element minOccurs="0" name="login" type="xs:string"/>
+      <xs:element minOccurs="0" name="password" type="xs:string"/>
+      <xs:element minOccurs="0" name="userRole" type="tns:userRole"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="rate">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MID"/>
+      <xs:enumeration value="HIGH"/>
+      <xs:enumeration value="LOW"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="userRole">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REGISTERED_USER"/>
+      <xs:enumeration value="BOOKING_MANAGER"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

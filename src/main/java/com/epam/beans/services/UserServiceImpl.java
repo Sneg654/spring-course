@@ -5,6 +5,7 @@ import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,15 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     public UserServiceImpl(@Qualifier("userDAO") UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
     public User register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userDAO.create(user);
     }
 
@@ -42,7 +47,12 @@ public class UserServiceImpl implements UserService {
         return userDAO.getAllByName(name);
     }
 
-    public List<Ticket> getBookedTickets() {
-        throw new UnsupportedOperationException("not implemented yet");
+    public List<Ticket> getBookedTickets(User user) {
+        return userDAO.getBookedTickets(user);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userDAO.getAll();
     }
 }

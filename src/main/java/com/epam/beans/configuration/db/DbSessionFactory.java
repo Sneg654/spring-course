@@ -42,8 +42,9 @@ public class DbSessionFactory {
             setProperty("hibernate.hbm2ddl.auto", hbm2ddlAuto);
         }});
         localSessionFactoryBean.setMappingResources("/mappings/auditorium.hbm.xml", "/mappings/event.hbm.xml",
-                                                    "/mappings/ticket.hbm.xml", "/mappings/user.hbm.xml",
-                                                    "/mappings/booking.hbm.xml");
+                "/mappings/ticket.hbm.xml", "/mappings/user.hbm.xml",
+                "/mappings/booking.hbm.xml", "/mappings/persistent.token.hbm.xml",
+                "/mappings/user.account.hbm.xml");
         return localSessionFactoryBean;
     }
 

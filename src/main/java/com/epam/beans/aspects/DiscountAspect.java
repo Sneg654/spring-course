@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Aspect
-@Component
 public class DiscountAspect {
 
     protected static final Map<String, Map<String, Integer>> discountPerUserCounter = new HashMap<>();

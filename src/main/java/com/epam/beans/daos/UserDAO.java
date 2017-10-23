@@ -1,5 +1,6 @@
 package com.epam.beans.daos;
 
+import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
 
 import java.util.List;
@@ -15,19 +16,25 @@ public interface UserDAO {
 
     User getByEmail(String email);
 
+    User getByLogin(String login);
+
     List<User> getAllByName(String name);
 
     List<User> getAll();
+
+    List<Ticket> getBookedTickets(User user);
 
     static void validateUser(User user) {
         if (Objects.isNull(user)) {
             throw new NullPointerException("User is [null]");
         }
-        if (Objects.isNull(user.getEmail())) {
-            throw new NullPointerException("User's email is [null]. User: [" + user + "]");
+        if (Objects.isNull(user.getEmail())||user.getEmail().isEmpty()) {
+            throw new NullPointerException("User's email is empty. User: [" + user + "]");
         }
-        if (Objects.isNull(user.getName())) {
-            throw new NullPointerException("User's name is [null]. User: [" + user + "]");
+        if (Objects.isNull(user.getName())||user.getName().isEmpty()) {
+            throw new NullPointerException("User's name is empty. User: [" + user + "]");
         }
     }
+
+
 }

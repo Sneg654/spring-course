@@ -6,7 +6,6 @@ import com.epam.beans.models.Event;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 public interface EventService {
 
     Event create(Event event);
@@ -19,9 +18,13 @@ public interface EventService {
 
     List<Event> getAll();
 
+    Event getById(Long id);
+
     List<Event> getForDateRange(LocalDateTime from, LocalDateTime to);
 
     List<Event> getNextEvents(LocalDateTime to);
 
     Event assignAuditorium(Event event, Auditorium auditorium, LocalDateTime date);
+
 }
+

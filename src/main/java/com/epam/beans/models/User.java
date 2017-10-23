@@ -1,18 +1,27 @@
 package com.epam.beans.models;
 
-import java.time.LocalDate;
+import com.epam.beans.adaptors.LocalDateAdapter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+@XmlRootElement(name = "user")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "User", propOrder = {"id", "email", "name", "birthday", "login", "password", "userRole"})
 public class User {
 
-    private  String lastName;
+    private long id;
+    private String email;
+    private String name;
+    private String login;
+    private String password;
+    private UserRole userRole;
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    private long      id;
-    private String    email;
-    private String    name;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate birthday;
 
     public User() {
@@ -25,17 +34,59 @@ public class User {
         this.birthday = birthday;
     }
 
+    public User(long id, String email, String name, String login, String password, UserRole userRole, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.login = login;
+        this.password = password;
+        this.userRole = userRole;
+        this.birthday = birthday;
+    }
+
     public User(String email, String name, LocalDate birthday) {
         this(-1, email, name, birthday);
     }
 
-    public User(String bill, String gates) {
-        this.name = bill;
-        this.lastName=gates;
+    public User(com.epam.beans.soap.com.epam.User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.name = user.getName();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.birthday = LocalDate.parse(user.getBirthday(), formatter);
+        this.password = user.getPassword();
+        this.userRole = UserRole.valueOf(user.getUserRole().name());
     }
 
     public User withId(long id) {
         return new User(id, email, name, birthday);
+    }
+
+
+    public String getLogin() {
+        return login;
+    }
+
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserRole() {
+        return userRole.name();
+    }
+
+
+    public void setUserRole(String userRole) {
+        this.userRole = UserRole.valueOf(userRole);
     }
 
     public long getId() {
@@ -49,6 +100,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
 
     public void setEmail(String email) {
         this.email = email;
@@ -101,10 +153,10 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-               "id=" + id +
-               ", email='" + email + '\'' +
-               ", name='" + name + '\'' +
-               ", birthday=" + birthday +
-               '}';
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", birthday=" + birthday +
+                '}';
     }
 }

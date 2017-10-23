@@ -36,6 +36,11 @@ public class InMemoryEventDAO implements EventDAO {
     }
 
     @Override
+    public Event getById(Long id) {
+        return null;
+    }
+
+    @Override
     public Event get(String name, Auditorium auditorium, LocalDateTime dateTime) {
         final Stream<Event> eventStream = getByName(name).stream();
         final Stream<Event> filteredByAuditorium = filterByAuditorium(eventStream, auditorium);

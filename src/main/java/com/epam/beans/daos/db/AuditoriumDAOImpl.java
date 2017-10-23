@@ -5,11 +5,13 @@ import com.epam.beans.daos.AuditoriumDAO;
 import com.epam.beans.models.Auditorium;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 
 @Repository(value = "auditoriumDAO")
+@Transactional
 public class AuditoriumDAOImpl extends AbstractDAO implements AuditoriumDAO {
 
     @Override

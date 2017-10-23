@@ -1,16 +1,39 @@
 package com.epam.beans.models;
 
+import com.epam.beans.adaptors.LocalDateTimeAdapter;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
-
+@XmlRootElement(name = "event")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Event", propOrder = {"id", "name", "rate", "basePrice", "dateTime", "auditorium", "auditoriumName"})
 public class Event {
 
-    private long          id;
-    private String        name;
-    private Rate          rate;
-    private double        basePrice;
+    private long id;
+    private String name;
+    private Rate rate;
+
+    @NumberFormat
+    private double basePrice;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     private LocalDateTime dateTime;
-    private Auditorium    auditorium;
+    private Auditorium auditorium;
+
+    public String getAuditoriumName() {
+        return auditoriumName;
+    }
+
+    public void setAuditoriumName(String auditoriumName) {
+        this.auditoriumName = auditoriumName;
+    }
+
+    private String auditoriumName;
 
     public Event() {
     }
@@ -26,6 +49,24 @@ public class Event {
         this.basePrice = basePrice;
         this.dateTime = dateTime;
         this.auditorium = auditorium;
+        if (auditorium != null) {
+            setAuditoriumName(auditorium.getName());
+        }
+    }
+
+    public Event(com.epam.beans.soap.com.epam.Event event) {
+        this.id = event.getId();
+        this.name = event.getName();
+        this.rate = Rate.valueOf(event.getRate().name());
+        this.basePrice = event.getBasePrice();
+        this.dateTime = LocalDateTime.parse(event.getDateTime());
+        this.auditorium = new Auditorium();
+        auditorium.setId(event.getAuditorium().getId());
+        auditorium.setSeatsNumber(event.getAuditorium().getSeatsNumber());
+        auditorium.setVipSeats(event.getAuditorium().getVipSeats());
+        if (auditorium != null) {
+            setAuditoriumName(auditorium.getName());
+        }
     }
 
     public Event withId(Long eventId) {
@@ -36,6 +77,7 @@ public class Event {
         return id;
     }
 
+
     public void setId(long id) {
         this.id = id;
     }
@@ -43,6 +85,7 @@ public class Event {
     public String getName() {
         return name;
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -52,6 +95,7 @@ public class Event {
         return rate;
     }
 
+
     public void setRate(Rate rate) {
         this.rate = rate;
     }
@@ -60,6 +104,7 @@ public class Event {
         return basePrice;
     }
 
+
     public void setBasePrice(double basePrice) {
         this.basePrice = basePrice;
     }
@@ -67,6 +112,7 @@ public class Event {
     public LocalDateTime getDateTime() {
         return dateTime;
     }
+
 
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
@@ -77,6 +123,7 @@ public class Event {
     }
 
     public void setAuditorium(Auditorium auditorium) {
+        setAuditoriumName(auditorium.getName());
         this.auditorium = auditorium;
     }
 
@@ -120,12 +167,12 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", rate=" + rate +
-               ", basePrice=" + basePrice +
-               ", dateTime=" + dateTime +
-               ", auditorium=" + auditorium +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", rate=" + rate +
+                ", basePrice=" + basePrice +
+                ", dateTime=" + dateTime +
+                ", auditorium=" + auditorium +
+                '}';
     }
 }

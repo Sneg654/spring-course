@@ -4,10 +4,7 @@ import com.epam.beans.aspects.mocks.CountAspectMock;
 import com.epam.beans.configuration.AppConfiguration;
 import com.epam.beans.configuration.db.DataSourceConfiguration;
 import com.epam.beans.configuration.db.DbSessionFactory;
-import com.epam.beans.daos.mocks.BookingDAOBookingMock;
-import com.epam.beans.daos.mocks.DBAuditoriumDAOMock;
-import com.epam.beans.daos.mocks.EventDAOMock;
-import com.epam.beans.daos.mocks.UserDAOMock;
+import com.epam.beans.daos.mocks.*;
 import com.epam.beans.models.Event;
 import com.epam.beans.models.Ticket;
 import com.epam.beans.models.User;
@@ -19,8 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -29,10 +28,18 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 13/2/16
+ * Time: 7:20 PM
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
                                  com.epam.beans.configuration.TestAspectsConfiguration.class})
 @Transactional
+@WebAppConfiguration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TestCounterAspect {
 
     @Autowired
@@ -56,7 +63,7 @@ public class TestCounterAspect {
     @Autowired
     private CounterAspect       counterAspect;
 
-    @Autowired
+      @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
 
     @Before
@@ -66,15 +73,16 @@ public class TestCounterAspect {
         userDAOMock.init();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
-    }
+     }
 
     @After
     public void cleanup() {
         CountAspectMock.cleanup();
         auditoriumDAOMock.cleanup();
-        userDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userDAOMock.cleanup();
+
     }
 
     @Test
@@ -116,16 +124,16 @@ public class TestCounterAspect {
     public void testBookTicketByName() {
         User user = (User) applicationContext.getBean("testUser1");
         Ticket ticket1 = (Ticket) applicationContext.getBean("testTicket1");
-        Ticket ticket2 = (Ticket) applicationContext.getBean("testTicket2");
+
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(5, 6), user,
                                                    ticket1.getPrice()));
         bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(7, 8), user,
                                                    ticket1.getPrice()));
-        bookingService.bookTicket(user, new Ticket(ticket2.getEvent(), ticket2.getDateTime(), Arrays.asList(7, 8), user,
-                                                   ticket2.getPrice()));
+        bookingService.bookTicket(user, new Ticket(ticket1.getEvent(), ticket1.getDateTime(), Arrays.asList(9, 10), user,
+                                                   ticket1.getPrice()));
         HashMap<String, Integer> expected = new HashMap<String, Integer>() {{
-            put(ticket1.getEvent().getName(), 2);
-            put(ticket2.getEvent().getName(), 1);
+            put(ticket1.getEvent().getName(), 3);
+
         }};
         assertEquals(expected, CounterAspect.getBookTicketByNameStat());
     }

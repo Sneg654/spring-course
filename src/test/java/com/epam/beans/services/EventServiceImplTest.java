@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -30,20 +32,26 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: Dmytro_Babichev
+ * Date: 06/2/16
+ * Time: 1:23 PM
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppConfiguration.class, DataSourceConfiguration.class, DbSessionFactory.class,
                                  TestEventServiceConfiguration.class})
 @Transactional
+@WebAppConfiguration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class EventServiceImplTest {
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    @Value("#{testEventServiceImpl}")
+    @Value("#{eventServiceImpl}")
     private EventService eventService;
 
-    @Autowired
     @Value("#{testHall1}")
     Auditorium auditorium;
 
@@ -52,9 +60,9 @@ public class EventServiceImplTest {
     Auditorium auditorium2;
 
     private final Event testEvent = new Event(UUID.randomUUID().toString(), Rate.HIGH, 1321, LocalDateTime.now(),
-                                                     null);
+            auditorium);
 
-    @Autowired
+
     @Value("#{testEventDAOMock}")
     private EventDAOMock eventDAOMock;
 
@@ -114,14 +122,10 @@ public class EventServiceImplTest {
 
     @Test
     public void testGetByName() throws Exception {
-        Event eventMock = (Event) applicationContext.getBean("testEvent1");
-        Event event1 = getEvent(eventMock);
-        Event eventMock3 = (Event) applicationContext.getBean("testEvent3");
-        Event event3 = getEvent(eventMock3);
-        List<Event> foundByName = eventService.getByName(event1.getName());
-        List<Event> expected = Arrays.asList(event1, event3);
-        assertTrue("List of events should match", expected.containsAll(foundByName));
-        assertTrue("List of events should match", foundByName.containsAll(expected));
+        Event testEvent1 = (Event) applicationContext.getBean("testEvent1");
+        Event testEvent2 = (Event) applicationContext.getBean("testEvent2");
+        assertEquals("Event does not exist",  testEvent1, eventService.getByName(testEvent1.getName()).get(0));
+        assertEquals("Event does not exist",  testEvent2, eventService.getByName(testEvent2.getName()).get(0));
     }
 
     private Event getEvent(Event eventMock) {return eventService.getEvent(eventMock.getName(), eventMock.getAuditorium(), eventMock.getDateTime());}

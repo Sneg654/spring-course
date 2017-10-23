@@ -1,6 +1,8 @@
 package com.epam.beans.models;
 
-import com.epam.util.CsvUtil;
+import com.epam.beans.utils.CsvUtil;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,9 +11,13 @@ public class Ticket {
 
     private long          id;
     private Event         event;
+
+    @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateTime;
+
     private String        seats;
     private User          user;
+    @NumberFormat
     private Double        price;
 
     public Ticket() {

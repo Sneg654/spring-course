@@ -1,0 +1,16 @@
+package com.epam.beans.adaptors;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.time.LocalDate;
+
+public class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
+    @Override
+    public LocalDate unmarshal(String str) throws Exception {
+        return LocalDate.parse(str);
+    }
+
+    @Override
+    public String marshal(LocalDate date) throws Exception {
+        return date.toString();
+    }
+}

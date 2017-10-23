@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+           targetNamespace="http://epam.com/event-web-service">
+
+    <xs:element name="event" type="event"/>
+
+    <xs:complexType name="event">
+        <xs:annotation>
+            <xs:documentation><![CDATA[Created with IntelliJ IDEA.
+User: Dmytro_Babichev
+Date: 2/1/2016
+Time: 7:42 PM]]></xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" name="auditorium" type="auditorium"/>
+            <xs:element minOccurs="0" name="auditoriumName" type="xs:string"/>
+            <xs:element name="basePrice" type="xs:double"/>
+            <xs:element minOccurs="0" name="dateTime" type="xs:string"/>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element minOccurs="0" name="name" type="xs:string"/>
+            <xs:element minOccurs="0" name="rate" type="rate"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="auditorium">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element minOccurs="0" name="name" type="xs:string"/>
+            <xs:element name="seatsNumber" type="xs:int"/>
+            <xs:element minOccurs="0" name="vipSeats" type="xs:string"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="vipSeatsList" nillable="true" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="rate">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MID"/>
+            <xs:enumeration value="LOW"/>
+            <xs:enumeration value="HIGH"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
