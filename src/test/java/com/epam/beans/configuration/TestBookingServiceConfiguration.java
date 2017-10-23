@@ -133,6 +133,15 @@ public class TestBookingServiceConfiguration {
         return new UserServiceImpl(userDAOMock());
     }
 
+    @Bean(name = "testUserAccountServiceImpl")
+    public UserAccountService userAccountServiceImpl(){
+        return new UserAccountServiceImpl(userAccountDAOMock());
+    }
+
+    @Bean
+    public UserAccountDAO userAccountDAOMock() {
+        return new UserAccountDAOMock(getUserAccounts());
+    }
 
     private List<UserAccount> getUserAccounts(){
         List<UserAccount> userAccounts = new ArrayList<>();
@@ -152,6 +161,6 @@ public class TestBookingServiceConfiguration {
     @Bean(name = "bookingServiceImpl")
     public BookingService bookingServiceImpl() {
         return new BookingServiceImpl(eventServiceImpl(), auditoriumServiceImpl(), userServiceImpl(),
-                                      discountBookingServiceImpl(), bookingBookingDAO(), 1, 2, 1.2, 1);
+                                      discountBookingServiceImpl(), bookingBookingDAO(), userAccountServiceImpl(), 1, 2, 1.2, 1);
     }
 }

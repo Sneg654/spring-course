@@ -27,6 +27,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserService       userService;
     private final BookingDAO        bookingDAO;
     private final DiscountService   discountService;
+    private final UserAccountService userAccountService;
     final         int               minSeatNumber;
     final         double            vipSeatPriceMultiplier;
     final         double            highRatedPriceMultiplier;
@@ -38,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
                               @Qualifier("userServiceImpl") UserService userService,
                               @Qualifier("discountServiceImpl") DiscountService discountService,
                               @Qualifier("bookingDAO") BookingDAO bookingDAO,
+                              @Qualifier("userAccountServiceImpl") UserAccountService userAccountService,
                               @Value("${min.seat.number}") int minSeatNumber,
                               @Value("${vip.seat.price.multiplier}") double vipSeatPriceMultiplier,
                               @Value("${high.rate.price.multiplier}") double highRatedPriceMultiplier,
@@ -47,7 +49,8 @@ public class BookingServiceImpl implements BookingService {
         this.userService = userService;
         this.bookingDAO = bookingDAO;
         this.discountService = discountService;
-         this.minSeatNumber = minSeatNumber;
+        this.userAccountService = userAccountService;
+        this.minSeatNumber = minSeatNumber;
         this.vipSeatPriceMultiplier = vipSeatPriceMultiplier;
         this.highRatedPriceMultiplier = highRatedPriceMultiplier;
         this.defaultRateMultiplier = defaultRateMultiplier;
@@ -139,7 +142,7 @@ public class BookingServiceImpl implements BookingService {
         double ticketPrice = getTicketPrice(event.getName(),
                 event.getAuditorium().getName(), ticket.getDateTime(),bookedSeatsList, user);
 
-
+        userAccountService.withdraw(user, ticketPrice);
         bookingDAO.create(user, ticket);
         } else {
             throw new IllegalStateException("Unable to book ticket: [" + ticket + "]. Seats are already booked.");

@@ -11,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-
-@Service
+@Service("userServiceImpl")
 @Transactional
 public class UserServiceImpl implements UserService {
 

@@ -65,6 +65,9 @@ public class TestDiscountAspect {
     @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
 
+    @Autowired
+    private UserAccountDAOMock userAccountDAOMock;
+
     @Value("#{discountAspectMock}")
     private DiscountAspectMock discountAspectMock;
 
@@ -72,10 +75,11 @@ public class TestDiscountAspect {
     public void init() {
         auditoriumDAOMock.init();
         userDAOMock.init();
+        discountAspectMock.cleanup();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
-
-}
+        userAccountDAOMock.init();
+    }
 
     @After
     public void cleanup() {
@@ -83,6 +87,7 @@ public class TestDiscountAspect {
         auditoriumDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userAccountDAOMock.cleanup();
         userDAOMock.cleanup();
     }
 

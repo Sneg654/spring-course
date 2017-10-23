@@ -24,7 +24,7 @@ import java.util.Map;
 @Configuration
 @ComponentScan(basePackageClasses = {Main.class})
 @EnableWebMvc
-@Import(WsConfiguration.class)
+@Import({WsConfiguration.class, HttpMessagesConfiguration.class})
 public class AppConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
@@ -54,7 +54,7 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver commonsMultipartResolver() {
+    public CommonsMultipartResolver commonsMultipartResolver(){
         CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
         commonsMultipartResolver.setDefaultEncoding("utf-8");
         commonsMultipartResolver.setMaxUploadSize(50000000);
@@ -70,6 +70,5 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
     public void configureViewResolvers(ViewResolverRegistry registry) {
         registry.freeMarker();
     }
-
 
 }

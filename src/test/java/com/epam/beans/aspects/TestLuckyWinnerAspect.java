@@ -53,7 +53,8 @@ public class TestLuckyWinnerAspect {
     @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
 
-
+    @Autowired
+    private UserAccountDAOMock userAccountDAOMock;
 
     @Before
     public void init() {
@@ -62,7 +63,7 @@ public class TestLuckyWinnerAspect {
         userDAOMock.init();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
-
+        userAccountDAOMock.init();
     }
 
     @After
@@ -71,6 +72,7 @@ public class TestLuckyWinnerAspect {
         auditoriumDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userAccountDAOMock.cleanup();
         userDAOMock.cleanup();
     }
 

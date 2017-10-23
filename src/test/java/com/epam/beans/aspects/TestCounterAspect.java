@@ -63,7 +63,10 @@ public class TestCounterAspect {
     @Autowired
     private CounterAspect       counterAspect;
 
-      @Autowired
+    @Autowired
+    private UserAccountDAOMock userAccountDAOMock;
+
+    @Autowired
     private DBAuditoriumDAOMock auditoriumDAOMock;
 
     @Before
@@ -73,7 +76,8 @@ public class TestCounterAspect {
         userDAOMock.init();
         eventDAOMock.init();
         bookingDAOBookingMock.init();
-     }
+        userAccountDAOMock.init();
+    }
 
     @After
     public void cleanup() {
@@ -81,6 +85,7 @@ public class TestCounterAspect {
         auditoriumDAOMock.cleanup();
         eventDAOMock.cleanup();
         bookingDAOBookingMock.cleanup();
+        userAccountDAOMock.cleanup();
         userDAOMock.cleanup();
 
     }
